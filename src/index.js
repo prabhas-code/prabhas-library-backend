@@ -4,9 +4,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
-
-import connectionDB from "../config/connectDb.js";
-import { register } from "../controllers/user.contollers.js";
+dotenv.config();
 
 const app = express();
 app.use(morgan("dev"));
