@@ -10,11 +10,17 @@ dotenv.config();
 // 📧 FIXED — Gmail App Password Working on Render
 // ================================================================
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  // Use explicit settings instead of the 'service: "gmail"' shorthand
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // For Port 587, set to false (uses STARTTLS)
   auth: {
-    user: process.env.EMAIL_USER, // Gmail address
-    pass: process.env.EMAIL_PASS, // Gmail App Password (16-digit)
+    user: process.env.EMAIL_USER, // your Gmail address
+    pass: process.env.EMAIL_PASS, // your 16-digit Gmail App Password
   },
+  // Optional: Add a connection timeout value for robust logging/debugging
+  connectionTimeout: 10000, // 10 seconds
+  greetingTimeout: 5000, // 5 seconds
 });
 
 transporter.verify((error, success) => {

@@ -369,11 +369,17 @@ const listOfReturnedBooks = async (req, res) => {
 };
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  // Use explicit settings instead of the 'service: "gmail"' shorthand
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // For Port 587, set to false (uses STARTTLS)
   auth: {
-    user: process.env.EMAIL_USER, // your Gmail
-    pass: process.env.EMAIL_PASS, // 16-digit Gmail App Password
+    user: process.env.EMAIL_USER, // your Gmail address
+    pass: process.env.EMAIL_PASS, // your 16-digit Gmail App Password
   },
+  // Optional: Add a connection timeout value for robust logging/debugging
+  connectionTimeout: 10000, // 10 seconds
+  greetingTimeout: 5000, // 5 seconds
 });
 
 //sending otp to mail
