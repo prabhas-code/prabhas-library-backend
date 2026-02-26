@@ -1,8 +1,6 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY, // 🔐 secure
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export const generateBookDescription = async (req, res) => {
   const { title, genre } = req.body;
@@ -12,16 +10,23 @@ export const generateBookDescription = async (req, res) => {
   }
 
   try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: `Write a professional and engaging book description.
-Title: ${title}
-Genre: ${genre || "General"}
-Limit to 100 words.`,
+    const model = genAI.getGenerativeModel({
+      model: "gemini-1.5-flash",
     });
 
+    const prompt = `
+Write a professional and engaging book description.
+Title: ${title}
+Genre: ${genre || "General"}
+Limit to 100 words.
+`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
     return res.status(200).json({
-      description: response.text,
+      description: text,
     });
   } catch (error) {
     console.error("Gemini API error:", error);

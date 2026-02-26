@@ -15,7 +15,7 @@
   "author": "prabhas",
   "license": "ISC",
   "dependencies": {
-    "@google/genai": "^1.35.0",
+    "@google/generative-ai": "^0.24.1",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
