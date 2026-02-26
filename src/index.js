@@ -13,7 +13,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
 
-const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+const frontendUrl = process.env.FRONTEND_URL;
 const port = process.env.PORT || 8000;
 
 // ================================================================
@@ -23,17 +23,8 @@ app.use(
   cors({
     origin: frontendUrl,
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-
-// Required for cookies + axios
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", frontendUrl);
-  res.header("Access-Control-Allow-Credentials", "true");
-  next();
-});
 
 // ================================================================
 // Routes
@@ -42,11 +33,13 @@ import { userRouter } from "../routes/user.routes.js";
 import { bookRouter } from "../routes/book.routes.js";
 import { transactionRouter } from "../routes/transaction.routes.js";
 import paymentRouter from "../routes/payment.routes.js";
+import aiRouter from "../routes/ai.routes.js";
 
 app.use("/", userRouter);
 app.use("/", bookRouter);
 app.use("/", transactionRouter);
 app.use("/", paymentRouter);
+app.use("/ai", aiRouter);
 
 // ================================================================
 // Start Server

@@ -15,6 +15,7 @@
   "author": "prabhas",
   "license": "ISC",
   "dependencies": {
+    "@google/genai": "^1.35.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
@@ -27,6 +28,7 @@
     "multer": "^2.0.2",
     "nodemailer": "^7.0.5",
     "nodemon": "^3.1.10",
+    "openai": "^6.15.0",
     "razorpay": "^2.9.6",
     "resend": "^6.5.2"
   },
