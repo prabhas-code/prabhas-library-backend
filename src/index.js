@@ -13,6 +13,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
 
+const frontendUrl = process.env.FRONTEND_URL || "https://prabhas-library-frontend.vercel.app";
 const port = process.env.PORT || 8000;
 
 // ================================================================
@@ -22,7 +23,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "https://prabhas-library-frontend.vercel.app",
-  process.env.FRONTEND_URL,
+  frontendUrl,
 ]
   .filter(Boolean)
   .map((url) => url.replace(/\/$/, ""));
