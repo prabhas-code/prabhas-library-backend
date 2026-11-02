@@ -6,7 +6,12 @@ dotenv.config();
 
 export const verifyToken = async (req, res, next) => {
   try {
-    const token = req.cookies?.AccessToken;
+    const authHeader = req.headers.authorization;
+    const bearerToken = authHeader?.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : authHeader;
+
+    const token = req.cookies?.AccessToken || bearerToken;
 
     if (!token) {
       return res

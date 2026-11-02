@@ -128,16 +128,19 @@ const loginUser = async (req, res) => {
 
 const refreshAccessToken = async (req, res) => {
   try {
-    let incomingToken;
-    if (req.headers.authorization) {
-      incomingToken = req.headers.authorization?.split(" ")[1];
-    }
+    let incomingToken =
+      req.cookies?.RefreshToken ||
+      req.body?.refreshToken ||
+      req.headers["x-refresh-token"] ||
+      (req.headers.authorization?.startsWith("Bearer ")
+        ? req.headers.authorization.split(" ")[1]
+        : req.headers.authorization);
+
     if (!incomingToken) {
       return res.status(401).json({ message: "Token is required" });
     }
 
     const user = await User.findOne({ Refreshtoken: incomingToken });
-    console.log(user);
     if (!user) {
       return res.status(401).json({ message: "Invalid token" });
     }
@@ -147,8 +150,8 @@ const refreshAccessToken = async (req, res) => {
     await user.save();
     const options = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     };
     res.cookie("AccessToken", accessToken, options);
@@ -158,7 +161,7 @@ const refreshAccessToken = async (req, res) => {
       .json({ message: "Login Successfully", user, accessToken, refreshToken });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ message: "Internal serer error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -166,16 +169,25 @@ const logout = async (req, res) => {
   try {
     const options = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
     };
     res.clearCookie("AccessToken", options);
     res.clearCookie("RefreshToken", options);
 
-    if (req.user) {
-      const user = req.user;
-      user.Refreshtoken = null;
-      await user.save();
+    const token =
+      req.cookies?.AccessToken ||
+      (req.headers.authorization?.startsWith("Bearer ")
+        ? req.headers.authorization.split(" ")[1]
+        : req.headers.authorization);
+
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET_KEY);
+        await User.findByIdAndUpdate(decoded.id, { Refreshtoken: null });
+      } catch (e) {
+        // Token might be expired, logout succeeds anyway
+      }
     }
     res.status(200).json({ message: "Logout successfully" });
   } catch (error) {

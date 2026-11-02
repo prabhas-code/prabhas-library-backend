@@ -13,18 +13,48 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(cookieParser());
 
-const frontendUrl = process.env.FRONTEND_URL;
 const port = process.env.PORT || 8000;
 
 // ================================================================
-// ⭐ FIXED CORS (WORKS WITH Axios + Credentials)
+// ⭐ ROBUST CORS (Supports Vercel production + previews, localhost)
 // ================================================================
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://prabhas-library-frontend.vercel.app",
+  process.env.FRONTEND_URL,
+]
+  .filter(Boolean)
+  .map((url) => url.replace(/\/$/, ""));
+
 app.use(
   cors({
-    origin: frontendUrl,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      const cleanOrigin = origin.replace(/\/$/, "");
+      if (
+        allowedOrigins.includes(cleanOrigin) ||
+        cleanOrigin.endsWith(".vercel.app")
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
   })
 );
+
+// Health check endpoint
+app.get("/", (req, res) => {
+  const isDbConnected = mongoose.connection.readyState === 1;
+  res.status(200).json({
+    status: "ok",
+    message: "Libraverse Backend API is running 🚀",
+    database: isDbConnected ? "connected" : "disconnected / connecting",
+  });
+});
 
 // ================================================================
 // Routes

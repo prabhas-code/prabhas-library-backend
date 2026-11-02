@@ -26,7 +26,9 @@ userRouter.post("/register", upload.single("profilePhoto"), register);
 userRouter.post("/login", loginUser);
 userRouter.get("/users", getAllUsers);
 userRouter.post("/refresh", refreshAccessToken);
-userRouter.post("/logout", verifyToken, logout);
+userRouter.get("/refresh-token", refreshAccessToken);
+userRouter.post("/refresh-token", refreshAccessToken);
+userRouter.post("/logout", logout);
 userRouter.get("/userdata/:id", getUserById);
 userRouter.put(
   "/update",
